@@ -22,3 +22,4 @@ Nós da Segdev, repensamos novas formas de impactar os sistemas de seguros! Sabe
 Para que possamos te conhecer melhor, foram elaborados desafios específicos para cada área, onde iremos testar seus conhecimentos e suas lógicas.
 Clique no link abaixo e BOA SORTE!
 
+- [Frontend Challenge](https://github.com/segdev-tecnologia/vagas/tree/main/frontend-challenge)
