@@ -29,7 +29,7 @@ Diferenciais que serão maneiro serem implementados e você ira ganhar pontos co
 - Microfront;
 - Typescript;
 - Testes Unitários;
-- K.S.S principle;
+- K.I.S.S principle;
 - Storybook;
 - Design System;
 
