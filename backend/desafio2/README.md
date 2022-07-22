@@ -56,10 +56,13 @@ Primeiro é calculado o **base score** somando as respostas do formulario de ris
 
 O algoritimo resulta num score final para cada linha se seguros, que deve ser processada usando os seguintes ranges:
 
-- **0 ou abaixo** ==> **"economico"**.
-- **1 ou 2** ==> **"padrao"**.
-- **3 ou acima** ==> **"avancado"**.
+```mermaid
+graph LR;
+    A(0 ou abaixo)-.->B(economico);
+    C(1 ou 2)-.->D(padrao);
+    E(3 ou acima)-.->F(avancado);
 
+```
 
 ## A saída
 Considerando os dados acima, a aplicação deverá retornar o seguinte JSON payload:
