@@ -23,4 +23,4 @@ Para que possamos te conhecer melhor, foram elaborados desafios específicos par
 Clique no link abaixo e BOA SORTE!
 
 - [Frontend Challenge](https://github.com/segdev-tecnologia/vagas/tree/main/frontend-challenge)
-- [Backend Challenge](https://github.com/segdev-tecnologia/vagas/tree/main/backend)
+- [Backend Challenges](https://github.com/segdev-tecnologia/vagas/tree/main/backend)
