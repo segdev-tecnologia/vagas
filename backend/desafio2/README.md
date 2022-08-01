@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/segdev-tecnologia/backend_desafio_1/blob/main/segdev_logo.jpg?raw=true">
+  <img src="https://github.com/segdev-tecnologia/vagas/blob/main/backend/banner_segdev_4.jpg">
 </p>
 
 # Segdev - Backend Desafio 2
