@@ -12,7 +12,7 @@ A tarefa é criar um microserviço de usuários em **Ruby on Rails** (CRUD de us
 
 **Tudo o que você achar necessario** para que a gente entenda o que pensou, como solucionou o problema e como funciona o que você fez.
 
-## Criterios basico de aceitação
+## Critérios básicos de aceitação
 
 -  Versionar no github
 -  80+% de cobertura de testes unitários

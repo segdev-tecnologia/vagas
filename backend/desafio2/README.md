@@ -80,7 +80,7 @@ Considerando os dados acima, a aplicação deverá retornar o seguinte JSON payl
 Você pode usar qualquer tecnologia para implementar esse desafio, mas usar a tecnologia para a qual a sua vaga é direcionada sempre será um diferencial.
 No desafio será avaliada a interpretação do problema, a solução desenvolvida, a legibilidade do código e o zelo com a entrega/descrição da solução.
 
-#### Criterios basico de aceitação
+#### Critérios básicos de aceitação
 
 -  Versionar no github
 -  80+% de cobertura de testes unitários
