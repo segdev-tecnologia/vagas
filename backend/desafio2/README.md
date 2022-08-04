@@ -77,31 +77,12 @@ Considerando os dados acima, a aplicação deverá retornar o seguinte JSON payl
 ```
 
 ## Critérios
+Você pode usar qualquer tecnologia para implementar esse desafio, mas usar a tecnologia para a qual a sua vaga é direcionada sempre será um diferencial.
+No desafio será avaliada a interpretação do problema, a solução desenvolvida, a legibilidade do código e o zelo com a entrega/descrição da solução.
 
-You can choose any technology stack to implement this assignment. Using our stack is not a requirement in the selection process - we will consider exclusively that you build a solid system with an emphasis on code quality, simplicity, readability, maintainability, and reliability, particularly regarding architecture and testing to evaluate your work.
+#### Criterios basico de aceitação
 
-Be aware that Origin will mainly take into consideration the following evaluation criteria:
-* How clean and organized your code is;
-* If you implemented the business rules correctly;
-* How good your automated tests are (qualitative over quantitative).
-
-Other important notes:
-* Develop a extensible score calculation engine
-* Add to the README file: (1) instructions to run the code; (2) what were the main technical decisions you made; (3) relevant comments about your project 
-
-This assignment should be doable in less than one day. We expect you to learn fast, **communicate with us**, and make decisions regarding its implementation & scope to achieve the expected results on time.
-
-```mermaid
-sequenceDiagram
-    participant Alice
-    participant Bob
-    Alice->>John: Hello John, how are you?
-    loop Healthcheck
-        John->>John: Fight against hypochondria
-    end
-    Note right of Alice: Rational thoughts <br/>prevail!
-    John-->>Alice: Great!
-    John->>Bob: How about you?
-    Bob-->>John: Jolly good!
-
-```
+-  Versionar no github
+-  80+% de cobertura de testes unitários
+-  API Rest
+-  Uso de qualquer banco de dados relacional
