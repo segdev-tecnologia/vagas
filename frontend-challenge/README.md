@@ -1,7 +1,7 @@
 # Segdev - Desafio Frontend
 
 ## O desafio
-Você foi contratado para desenvolver um formulário básico utilizando **Vue.js** ou **Nuxt** para uma aplicação web no mercado de seguros. O formulário deve permitir que os usuários insiram informações relacionadas ao processo. Além disso, é necessário realizar a validação dos campos para garantir que os dados inseridos sejam válidos. 
+Consiste em você desenvolver um formulário básico utilizando **Vue.js** ou **Nuxt** para uma aplicação web no mercado de seguros. O formulário deve permitir que os usuários insiram informações relacionadas ao processo. Além disso, é necessário realizar a validação dos campos para garantir que os dados inseridos sejam válidos. 
 
 #### Requisitos
 Você deve desenvolver o formulário em uma única página, porém, esse formulário possui campos variáveis de acordo com o tipo de solicitação selecionado pelo usuário (judicial/contratual).
