@@ -6,7 +6,7 @@ Consiste em você desenvolver um formulário básico utilizando **Vue.js** ou **
 #### Requisitos
 Você deve desenvolver o formulário em uma única página, porém, esse formulário possui campos variáveis de acordo com o tipo de solicitação selecionado pelo usuário (judicial/contratual).
 
-* Para popular o campo "Tipo da solicitação", você deve realizar um GET para o seguinte endpoint: https://6fe91ca9-7e4d-4648-91e3-b0274a86dc58.mock.pstmn.io/api/get-solicitation-types
+* Para popular o campo "Tipo da solicitação", você deve realizar um GET para o seguinte endpoint: https://6fe91ca9-7e4d-4648-91e3-b0274a86dc58.mock.pstmn.io/api/get-solicitation-types. Repare que cada objeto no *array* possui um *max_allowed_value*, esse valor deverá ser usado para validar o campo Valor do Processo/Contrato posteriormente.
 
 1.  **Campos do formulário (Judicial):**
     -   **Tipo de solicitação**: Obrigatório, deve ser "judicial" e precisa ser selecionado antes de gerar os campos do formulário.
@@ -17,7 +17,7 @@ Você deve desenvolver o formulário em uma única página, porém, esse formul�
 	    - **Rua**: Deve possuir no mínimo 2 caracteres (preencher de acordo com a API, porém, caso o valor não exista na API, deixar o usuário preencher).
 	    - **Bairro**: Deve possuir no mínimo 2 caracteres (preencher de acordo com a API, porém, caso o valor não exista na API, deixar o usuário preencher).
 	  - **Processo**: um objeto contendo os campos abaixo:
-		  - **Valor do processo** (R$): Deve ser maior que 0,01.
+		  - **Valor do processo** (R$): Deve ser maior que 0,01 e ter o valor máximo de acordo com o *max_allowed_value*.
 		  - **Observações**: Campo de texto não obrigatório.
 		  
 2.  **Campos do formulário (Contratual):**
@@ -29,7 +29,7 @@ Você deve desenvolver o formulário em uma única página, porém, esse formul�
 	    - **Rua**: Deve possuir no mínimo 2 caracteres (preencher de acordo com a API, porém, caso o valor não exista na API, deixar o usuário preencher).
 	    - **Bairro**: Deve possuir no mínimo 2 caracteres (preencher de acordo com a API, porém, caso o valor não exista na API, deixar o usuário preencher).
 	  - **Contrato**: um objeto contendo os campos abaixo:
-		  - **Valor do contrato** (R$): Deve ser maior que 0,01.
+		  - **Valor do contrato** (R$): Deve ser maior que 0,01 e ter o valor máximo de acordo com o *max_allowed_value*.
 		  - **Observações**: Campo de texto não obrigatório.
 3.  **Validação:**
     
