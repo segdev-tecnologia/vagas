@@ -6,7 +6,7 @@ Consiste em você desenvolver um formulário básico utilizando **Vue.js** ou **
 #### Requisitos
 Você deve desenvolver o formulário em uma única página, porém, esse formulário possui campos variáveis de acordo com o tipo de solicitação selecionado pelo usuário (judicial/contratual).
 
-* Para popular o campo "Tipo da solicitação", você deve realizar um GET para o seguinte endpoint: 1.  https://teste-worker.wapesolucoes.workers.dev/api/solicitation
+* Para popular o campo "Tipo da solicitação", você deve realizar um GET para o seguinte endpoint: https://teste-worker.wapesolucoes.workers.dev/api/solicitation
 
 1.  **Campos do formulário (Contratual):**
     -   **Tipo de solicitação**: Obrigatório, deve ser "judicial" e precisa ser selecionado antes de gerar os campos do formulário.
