@@ -49,33 +49,33 @@ Você deve desenvolver o formulário em uma única página, porém, esse formul�
 
 ## Objeto esperado -> Judicial
     { 
-	    "solicitation_type":  "judicial", 
-	    "policy_holder":  {
-		  "name":  "Fulano de Tal",
-		  "document":  "CNPJ",
-		  "cep":  "00000-000",
-		  "street":  "Rua X",
-		  "neighborhood":  "Bairro Y"
+	    "solicitation_type": "judicial", 
+	    "policy_holder": {
+		  "name": "Fulano de Tal",
+		  "document": "CNPJ",
+		  "cep": "00000-000",
+		  "street": "Rua X",
+		  "neighborhood": "Bairro Y"
 		},
 		"process":  {
-		  "insured_amount":  10000,
-		  "observations":  "Texto grande para descrição da solicitação"
+		  "insured_amount": 10000,
+		  "observations": "Texto grande para descrição da solicitação"
 		}
 	}
 
 ## Objeto esperado -> Contratual
     { 
-	    "solicitation_type":  "contractual", 
-	    "insured":  {
-		  "name":  "Fulano de Tal",
-		  "document":  "CPF",
-		  "cep":  "00000-000",
-		  "street":  "Rua X",
-		  "neighborhood":  "Bairro Y"
+	    "solicitation_type": "contractual", 
+	    "insured": {
+		  "name": "Fulano de Tal",
+		  "document": "CPF",
+		  "cep": "00000-000",
+		  "street": "Rua X",
+		  "neighborhood": "Bairro Y"
 		},
-		"contract":  {
-		  "insured_amount":  10000,
-		  "observations":  "Texto grande para descrição da solicitação"
+		"contract": {
+		  "insured_amount": 10000,
+		  "observations": "Texto grande para descrição da solicitação"
 		}
 	}
 
@@ -83,4 +83,4 @@ Você deve desenvolver o formulário em uma única página, porém, esse formul�
 
 Fique a vontade em tirar as dúvidas com a gente 🙂
 
-challenge@segdev.com.br 
+front-end@segdev.com.br 
