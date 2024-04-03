@@ -8,7 +8,7 @@ Você deve desenvolver o formulário em uma única página, porém, esse formul�
 
 * Para popular o campo "Tipo da solicitação", você deve realizar um GET para o seguinte endpoint: https://teste-worker.wapesolucoes.workers.dev/api/solicitation
 
-1.  **Campos do formulário (Contratual):**
+1.  **Campos do formulário (Judicial):**
     -   **Tipo de solicitação**: Obrigatório, deve ser "judicial" e precisa ser selecionado antes de gerar os campos do formulário.
     -   **Tomador**: Deve ser um objeto contendo os campos abaixo:
 	    -   **Nome completo**: Deve possuir no mínimo 2 caracteres e sobrenome.
