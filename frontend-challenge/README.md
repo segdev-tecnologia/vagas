@@ -33,14 +33,15 @@ Você deve desenvolver o formulário em uma única página, porém, esse formul�
 		  - **Observações**: Campo de texto não obrigatório.
 3.  **Validação:**
     
-    -   Todos os campos são obrigatórios,  exceto **observações**.
+    -   Todos os campos são obrigatórios, exceto **observações**.
     -   Os campos devem ser validados em tempo real, ou seja, conforme o usuário digita.
     -   Deve ser exibida uma mensagem de erro específica para cada campo caso os dados inseridos não estejam de acordo com os requisitos.
     
 4.  **Tecnologias:**
-    
-    -   Você pode utilizar bibliotecas que auxiliam na validação e criação do formulário, como: Formkit, VeeValidate, Zod, Vuelidate.
-    -   Você pode utilizar bibliotecas adicionais caso necessite.
+
+    - Você deve estilizar o formulário e organizar os campos de acordo com a sua visão.
+    - Você pode utilizar bibliotecas que auxiliam na validação e criação do formulário, como: Formkit, VeeValidate, Zod, Vuelidate.
+    - Você pode utilizar bibliotecas adicionais caso necessite.
    
 5.  **Exibição de Dados:**
     
