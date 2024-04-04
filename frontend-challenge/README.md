@@ -7,7 +7,7 @@ Consiste em você desenvolver um formulário básico utilizando **Vue.js** ou **
 Você deve desenvolver o formulário em uma única página, porém, esse formulário possui campos variáveis de acordo com o tipo de solicitação selecionado pelo usuário (judicial/contratual).
 
 * Para popular o campo "Tipo da solicitação", você deve realizar um GET para o seguinte endpoint: https://6fe91ca9-7e4d-4648-91e3-b0274a86dc58.mock.pstmn.io/api/get-solicitation-types.
-* !!!Repare que cada objeto no *array* possui um *max_allowed_value*, esse valor deverá ser usado para validar o campo Valor do Processo/Contrato posteriormente.
+* [!!!] Repare que cada objeto no *array* possui um *max_allowed_value*, esse valor deverá ser usado para validar o campo Valor do Processo/Contrato posteriormente.
 
 1.  **Campos do formulário (Judicial):**
     -   **Tipo de solicitação**: Obrigatório, deve ser "judicial" e precisa ser selecionado antes de gerar os campos do formulário.
