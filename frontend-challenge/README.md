@@ -82,6 +82,6 @@ Você deve desenvolver o formulário em uma única página, porém, esse formul�
 
 ---
 
-Fique a vontade em tirar as dúvidas com a gente 🙂
+Fique a vontade para tirar as dúvidas com a gente 🙂
 
 front-end@segdev.com.br 
