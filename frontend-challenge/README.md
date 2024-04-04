@@ -14,7 +14,7 @@ Você deve desenvolver o formulário em uma única página, porém, esse formul�
     -   **Tomador**: Deve ser um objeto contendo os campos abaixo:
 	    -   **Nome completo**: Deve possuir no mínimo 2 caracteres e sobrenome.
 	    -   **Documento**: Deve ser um CNPJ válido.
-	    - **CEP**: Deve ser um CEP válido (deve ser utilizada a API [ViaCEP](https://viacep.com.br))
+	    - **CEP**: Deve ser um CEP válido (utilizar a API [ViaCEP](https://viacep.com.br))
 	    - **Rua**: Deve possuir no mínimo 2 caracteres (preencher de acordo com a API, porém, caso o valor não exista na API, deixar o usuário preencher).
 	    - **Bairro**: Deve possuir no mínimo 2 caracteres (preencher de acordo com a API, porém, caso o valor não exista na API, deixar o usuário preencher).
 	  - **Processo**: um objeto contendo os campos abaixo:
@@ -26,7 +26,7 @@ Você deve desenvolver o formulário em uma única página, porém, esse formul�
     -   **Segurado**: Deve ser um objeto contendo os campos abaixo:
 	    -   **Nome completo**: Deve possuir no mínimo 2 caracteres e sobrenome.
 	    -   **Documento**: Deve ser um CNPJ válido.
-	    - **CEP**: Deve ser um CEP válido (deve ser utilizada a API [ViaCEP](https://viacep.com.br))
+	    - **CEP**: Deve ser um CEP válido (utilizar a API [ViaCEP](https://viacep.com.br))
 	    - **Rua**: Deve possuir no mínimo 2 caracteres (preencher de acordo com a API, porém, caso o valor não exista na API, deixar o usuário preencher).
 	    - **Bairro**: Deve possuir no mínimo 2 caracteres (preencher de acordo com a API, porém, caso o valor não exista na API, deixar o usuário preencher).
 	  - **Contrato**: um objeto contendo os campos abaixo:
