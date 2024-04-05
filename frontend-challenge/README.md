@@ -25,7 +25,7 @@ Você deve desenvolver o formulário em uma única página, porém, esse formul�
     -   **Tipo de solicitação**: Obrigatório, deve ser "*contractual*" e precisa ser selecionado antes de gerar os campos do formulário.
     -   **Segurado**: Deve ser um objeto contendo os campos abaixo:
 	    -   **Nome completo**: Deve possuir no mínimo 2 caracteres e sobrenome.
-	    -   **Documento**: Deve ser um CNPJ válido.
+	    -   **Documento**: Deve ser um CPF válido.
 	    - **CEP**: Deve ser um CEP válido (utilizar a API [ViaCEP](https://viacep.com.br))
 	    - **Rua**: Deve possuir no mínimo 2 caracteres (preencher de acordo com a API, porém, caso o valor não exista na API, deixar o usuário preencher).
 	    - **Bairro**: Deve possuir no mínimo 2 caracteres (preencher de acordo com a API, porém, caso o valor não exista na API, deixar o usuário preencher).
