@@ -14,4 +14,5 @@ Boa sorte. :D
 
 - [Backend desafio 1](https://github.com/segdev-tecnologia/vagas/tree/main/backend/desafio1)
 - [Backend desafio 2](https://github.com/segdev-tecnologia/vagas/tree/main/backend/desafio2)
+- [Backend desafio 3](https://github.com/segdev-tecnologia/vagas/tree/main/backend/desafio3)
 
