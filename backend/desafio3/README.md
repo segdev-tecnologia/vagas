@@ -20,9 +20,6 @@ A **apólice** representa o contrato de seguro firmado entre o segurado e a segu
 - `fim_vigencia` — data de término da cobertura  
 - `importancia_segurada` — valor de referência original  
 - `lmg` — limite máximo de garantia (valor máximo atual de cobertura, após todos os endossos)  
-- `status` — situação atual da apólice:  
-  - `ATIVA` (padrão)  
-  - `BAIXADA` (apólice cancelada)
 
 A apólice deve sempre refletir os **dados vigentes**, considerando os endossos aplicados.
 
