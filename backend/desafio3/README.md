@@ -104,7 +104,7 @@ Os tipos de endosso devem ser determinados automaticamente a partir das diferen�
 
 ---
 
-## Testes Automatizados
+## Testes Unitários
 
 Deve ser entregue uma suíte de testes cobrindo os principais fluxos funcionais:
 - Criação de apólice  
