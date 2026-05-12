@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Desafio 4 — Gerador / Importador de Apólices</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #1e293b;
+      --border: #334155;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-hover: #0ea5e9;
+      --success: #22c55e;
+      --error: #ef4444;
+      --warn: #facc15;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: var(--text);
+      padding: 2rem;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(360px, 1fr) minmax(480px, 1.5fr);
+      gap: 1.5rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .panel-form { padding: 2rem; }
+    h1 { margin: 0 0 0.5rem; font-size: 1.4rem; }
+    h2 { margin: 1.5rem 0 0.75rem; font-size: 1rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+    .subtitle { margin: 0 0 1.5rem; color: var(--muted); font-size: 0.9rem; }
+
+    label { display: block; margin-bottom: 0.4rem; font-size: 0.85rem; color: var(--muted); }
+
+    input, select {
+      width: 100%;
+      padding: 0.7rem 0.9rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    input:focus, select:focus { border-color: var(--accent); }
+
+    button {
+      margin-top: 1rem;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: var(--accent);
+      color: #0c1220;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    button:hover:not(:disabled) { background: var(--accent-hover); }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    button.danger {
+      background: var(--error);
+      color: #fff;
+    }
+    button.danger:hover:not(:disabled) { background: #b91c1c; }
+
+    .result {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      display: none;
+    }
+    .result.show { display: block; }
+    .result.success { background: rgba(34, 197, 94, 0.15); border: 1px solid var(--success); color: var(--success); }
+    .result.error   { background: rgba(239, 68, 68, 0.15); border: 1px solid var(--error); color: var(--error); }
+
+    code { background: var(--bg); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.85em; }
+    .hint { font-size: 0.8rem; color: var(--muted); margin-top: 0.5rem; }
+
+    /* Terminal */
+    .terminal {
+      display: flex;
+      flex-direction: column;
+      height: 600px;
+      overflow: hidden;
+      align-self: start;
+      position: sticky;
+      top: 2rem;
+    }
+
+    .terminal-header {
+      background: #0b1220;
+      border-bottom: 1px solid var(--border);
+      padding: 0.6rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-radius: 12px 12px 0 0;
+    }
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot.red { background: #ef4444; }
+    .dot.yellow { background: #facc15; }
+    .dot.green { background: #22c55e; }
+    .terminal-title {
+      margin-left: 0.5rem;
+      font-family: "Menlo", "Consolas", monospace;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .terminal-status {
+      margin-left: auto;
+      font-family: "Menlo", "Consolas", monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+    .status-dot.connected { background: var(--success); }
+    .status-dot.disconnected { background: var(--error); }
+
+    .terminal-body {
+      flex: 1;
+      background: #020617;
+      color: #cbd5e1;
+      font-family: "Menlo", "Consolas", "Courier New", monospace;
+      font-size: 0.82rem;
+      line-height: 1.4;
+      padding: 1rem;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      border-radius: 0 0 12px 12px;
+    }
+
+    .line { display: block; }
+    .line .ts { color: #64748b; margin-right: 0.5rem; }
+    .line.info  { color: #cbd5e1; }
+    .line.warn  { color: var(--warn); }
+    .line.error { color: var(--error); }
+    .line.system { color: var(--accent); font-style: italic; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <div class="panel panel-form">
+      <h1>Desafio 4</h1>
+      <p class="subtitle">Geração de fixtures e importação de apólices.</p>
+
+      <h2>Gerar apólices</h2>
+      <form id="generator-form">
+        <label for="count">Quantidade</label>
+        <input id="count" name="count" type="number" min="1" value="10" required />
+        <button type="submit" id="generator-btn">Gerar</button>
+      </form>
+      <div id="generator-result" class="result" role="status" aria-live="polite"></div>
+      <p class="hint">Endpoint: <code>POST /fixtures/policies</code></p>
+
+      <h2>Importar apólices</h2>
+      <form id="import-form">
+        <label for="policy-holder">Policy holder</label>
+        <select id="policy-holder" name="policy_holder" required>
+          <option value="">Carregando…</option>
+        </select>
+        <button type="submit" id="import-btn">Importar</button>
+      </form>
+      <div id="import-result" class="result" role="status" aria-live="polite"></div>
+      <p class="hint">Endpoint: <code>POST /importations</code> — logs aparecem no terminal ao lado em tempo real.</p>
+
+      <h2>Zona de perigo</h2>
+      <button
+        type="button"
+        id="nuke-btn"
+        class="danger"
+        title="Apaga TODAS as fixtures geradas e TODAS as apolices da tabela. Acao irreversivel."
+      >Nuke</button>
+      <div id="nuke-result" class="result" role="status" aria-live="polite"></div>
+    </div>
+
+    <div class="panel terminal">
+      <div class="terminal-header">
+        <span class="dot red"></span>
+        <span class="dot yellow"></span>
+        <span class="dot green"></span>
+        <span class="terminal-title">logs@desafio4 — websocket</span>
+        <span class="terminal-status">
+          <span id="ws-status-dot" class="status-dot"></span>
+          <span id="ws-status-text">connecting…</span>
+        </span>
+      </div>
+      <div id="terminal-body" class="terminal-body" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <script>
+  (function () {
+    // ---------- helpers ----------
+    function $(id) { return document.getElementById(id); }
+
+    function showResult(el, message, kind) {
+      el.textContent = message;
+      el.className = "result show " + kind;
+    }
+
+    // ---------- terminal ----------
+    const terminal = $("terminal-body");
+    const MAX_LINES = 500;
+
+    function appendLine(text, level) {
+      const line = document.createElement("span");
+      line.className = "line " + (level || "info");
+
+      const ts = document.createElement("span");
+      ts.className = "ts";
+      ts.textContent = new Date().toLocaleTimeString();
+
+      line.appendChild(ts);
+      line.appendChild(document.createTextNode(text));
+      terminal.appendChild(line);
+      terminal.appendChild(document.createTextNode("\n"));
+
+      while (terminal.childNodes.length > MAX_LINES * 2) {
+        terminal.removeChild(terminal.firstChild);
+      }
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    // ---------- ActionCable client (vanilla WS protocol) ----------
+    const statusDot = $("ws-status-dot");
+    const statusText = $("ws-status-text");
+
+    function setStatus(state, label) {
+      statusDot.className = "status-dot " + state;
+      statusText.textContent = label;
+    }
+
+    const channelIdentifier = JSON.stringify({ channel: "LogsChannel" });
+    let socket = null;
+    let reconnectTimer = null;
+
+    function connect() {
+      const proto = location.protocol === "https:" ? "wss:" : "ws:";
+      const url = proto + "//" + location.host + "/cable";
+      socket = new WebSocket(url);
+
+      socket.onopen = function () {
+        setStatus("connected", "connected");
+        appendLine("connected to " + url, "system");
+        socket.send(JSON.stringify({ command: "subscribe", identifier: channelIdentifier }));
+      };
+
+      socket.onmessage = function (event) {
+        let data;
+        try { data = JSON.parse(event.data); } catch (_) { return; }
+
+        if (data.type === "ping" || data.type === "welcome") return;
+        if (data.type === "confirm_subscription") {
+          appendLine("subscribed to LogsChannel", "system");
+          return;
+        }
+        if (data.type === "reject_subscription") {
+          appendLine("subscription rejected", "error");
+          return;
+        }
+        if (data.message && data.message.line !== undefined) {
+          appendLine(data.message.line, data.message.level);
+        }
+      };
+
+      socket.onclose = function () {
+        setStatus("disconnected", "disconnected");
+        appendLine("disconnected — retrying in 2s", "system");
+        clearTimeout(reconnectTimer);
+        reconnectTimer = setTimeout(connect, 2000);
+      };
+
+      socket.onerror = function () {
+        setStatus("disconnected", "error");
+      };
+    }
+
+    connect();
+
+    // ---------- generator form ----------
+    const generatorForm = $("generator-form");
+    const generatorBtn = $("generator-btn");
+    const generatorResult = $("generator-result");
+    const countInput = $("count");
+
+    generatorForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      const count = parseInt(countInput.value, 10);
+      if (!Number.isInteger(count) || count <= 0) {
+        showResult(generatorResult, "Informe um número inteiro maior que 0.", "error");
+        return;
+      }
+
+      generatorBtn.disabled = true;
+      generatorBtn.textContent = "Gerando…";
+
+      try {
+        const r = await fetch("/fixtures/policies", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({ count: count })
+        });
+        const data = await r.json();
+        if (r.ok) {
+          showResult(generatorResult, "Sucesso! " + data.generated + " apólice(s) geradas.", "success");
+          loadPolicyHolders();
+        } else {
+          showResult(generatorResult, "Erro: " + (data.message || "falha"), "error");
+        }
+      } catch (err) {
+        showResult(generatorResult, "Erro de rede: " + err.message, "error");
+      } finally {
+        generatorBtn.disabled = false;
+        generatorBtn.textContent = "Gerar";
+      }
+    });
+
+    // ---------- import form ----------
+    const importForm = $("import-form");
+    const importBtn = $("import-btn");
+    const importResult = $("import-result");
+    const holderInput = $("policy-holder");
+
+    async function loadPolicyHolders() {
+      try {
+        const r = await fetch("/fixtures/policy_holders", { headers: { "Accept": "application/json" } });
+        const data = await r.json();
+        const holders = (data.policy_holders || []);
+        holderInput.innerHTML = "";
+
+        if (holders.length === 0) {
+          const opt = document.createElement("option");
+          opt.value = "";
+          opt.textContent = "Nenhuma fixture disponível — gere algumas primeiro";
+          opt.disabled = true;
+          opt.selected = true;
+          holderInput.appendChild(opt);
+          importBtn.disabled = true;
+          return;
+        }
+
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = "Selecione um policy holder…";
+        placeholder.disabled = true;
+        placeholder.selected = true;
+        holderInput.appendChild(placeholder);
+
+        holders.forEach(function (slug) {
+          const opt = document.createElement("option");
+          opt.value = slug;
+          opt.textContent = slug;
+          holderInput.appendChild(opt);
+        });
+        importBtn.disabled = false;
+      } catch (err) {
+        holderInput.innerHTML = '<option value="" disabled selected>Erro ao carregar</option>';
+      }
+    }
+
+    loadPolicyHolders();
+
+    importForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      const holder = holderInput.value.trim();
+      if (!holder) {
+        showResult(importResult, "Informe um policy_holder.", "error");
+        return;
+      }
+
+      importBtn.disabled = true;
+      importBtn.textContent = "Iniciando…";
+
+      try {
+        const r = await fetch("/importations", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({ policy_holder: holder })
+        });
+        const data = await r.json();
+        if (r.ok) {
+          showResult(importResult, "Importação iniciada para " + data.policy_holder + ". Acompanhe no terminal.", "success");
+        } else {
+          showResult(importResult, "Erro: " + (data.message || "falha"), "error");
+        }
+      } catch (err) {
+        showResult(importResult, "Erro de rede: " + err.message, "error");
+      } finally {
+        importBtn.disabled = false;
+        importBtn.textContent = "Importar";
+      }
+    });
+    // ---------- nuke ----------
+    const nukeBtn = $("nuke-btn");
+    const nukeResult = $("nuke-result");
+
+    nukeBtn.addEventListener("click", async function () {
+      const confirmed = window.confirm(
+        "Isso vai apagar TODAS as fixtures e TODAS as apolices do banco.\n\nTem certeza?"
+      );
+      if (!confirmed) return;
+
+      nukeBtn.disabled = true;
+      nukeBtn.textContent = "Nuking…";
+
+      try {
+        const r = await fetch("/nuke", {
+          method: "DELETE",
+          headers: { "Accept": "application/json" }
+        });
+        const data = await r.json();
+        if (r.ok) {
+          showResult(
+            nukeResult,
+            "Removidas " + data.deleted_policies + " apolice(s) e " + data.deleted_fixtures + " fixture(s).",
+            "success"
+          );
+          loadPolicyHolders();
+        } else {
+          showResult(nukeResult, "Erro: " + (data.message || "falha"), "error");
+        }
+      } catch (err) {
+        showResult(nukeResult, "Erro de rede: " + err.message, "error");
+      } finally {
+        nukeBtn.disabled = false;
+        nukeBtn.textContent = "Nuke";
+      }
+    });
+  })();
+  </script>
+</body>
+</html>

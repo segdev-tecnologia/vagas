@@ -1,0 +1,41 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  host: <%= ENV.fetch("DATABASE_HOST", "localhost") %>
+  port: <%= ENV.fetch("DATABASE_PORT", 5432) %>
+  username: <%= ENV.fetch("DATABASE_USER", "postgres") %>
+  password: <%= ENV.fetch("DATABASE_PASSWORD", "postgres") %>
+
+development:
+  <<: *default
+  database: desafio4_development
+
+test:
+  <<: *default
+  database: desafio4_test
+
+production:
+  primary:
+    <<: *default
+    database: <%= ENV.fetch("DATABASE_NAME", "desafio4_production") %>
+    username: <%= ENV.fetch("DATABASE_USER", "desafio4") %>
+    password: <%= ENV["DATABASE_PASSWORD"] %>
+  cache:
+    <<: *default
+    database: <%= ENV.fetch("DATABASE_NAME", "desafio4_production") %>_cache
+    username: <%= ENV.fetch("DATABASE_USER", "desafio4") %>
+    password: <%= ENV["DATABASE_PASSWORD"] %>
+    migrations_paths: db/cache_migrate
+  queue:
+    <<: *default
+    database: <%= ENV.fetch("DATABASE_NAME", "desafio4_production") %>_queue
+    username: <%= ENV.fetch("DATABASE_USER", "desafio4") %>
+    password: <%= ENV["DATABASE_PASSWORD"] %>
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *default
+    database: <%= ENV.fetch("DATABASE_NAME", "desafio4_production") %>_cable
+    username: <%= ENV.fetch("DATABASE_USER", "desafio4") %>
+    password: <%= ENV["DATABASE_PASSWORD"] %>
+    migrations_paths: db/cable_migrate

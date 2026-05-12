@@ -1,0 +1,24 @@
+
+one:
+  policy_number: MyString
+  insured: MyString
+  policy_holder: MyString
+  beneficiary: MyString
+  coverage_start_date: 2026-05-12
+  coverage_end_date: 2026-05-12
+  issue_date: 2026-05-12
+  policy_type: MyString
+  insured_amount: 9.99
+  lmg: 9.99
+
+two:
+  policy_number: MyString
+  insured: MyString
+  policy_holder: MyString
+  beneficiary: MyString
+  coverage_start_date: 2026-05-12
+  coverage_end_date: 2026-05-12
+  issue_date: 2026-05-12
+  policy_type: MyString
+  insured_amount: 9.99
+  lmg: 9.99

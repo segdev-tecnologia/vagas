@@ -1,0 +1,29 @@
+service: desafio4
+
+image: desafio4
+
+servers:
+  web:
+    - 192.168.0.1
+
+registry:
+  server: localhost:5555
+
+env:
+  secret:
+    - RAILS_MASTER_KEY
+  clear:
+    SOLID_QUEUE_IN_PUMA: true
+
+aliases:
+  console: app exec --interactive --reuse "bin/rails console"
+  shell: app exec --interactive --reuse "bash"
+  logs: app logs -f
+  dbc: app exec --interactive --reuse "bin/rails dbconsole --include-password"
+
+volumes:
+  - "desafio4_storage:/rails/storage"
+
+builder:
+  arch: amd64
+
