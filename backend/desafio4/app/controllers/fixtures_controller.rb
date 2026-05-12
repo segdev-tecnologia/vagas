@@ -13,9 +13,6 @@ class FixturesController < ApplicationController
   end
 
   def policy_holders
-    slugs = Dir.glob(Rails.root.join("fixtures/data/*.json"))
-               .map { |path| File.basename(path, ".json") }
-               .sort
-    render json: { policy_holders: slugs }
+    render json: { policy_holders: PolicyFixtureGenerator::POLICY_HOLDERS.sort }
   end
 end

@@ -1,8 +1,8 @@
 module Importations
   class Import
-    BATCH_SIZE = 10
-    SIMULATED_LATENCY_SECONDS = 5
-    SIMULATED_POLICY_LATENCY_SECONDS = 2
+    BATCH_SIZE = Integer(ENV.fetch("IMPORT_BATCH_SIZE", "10"))
+    SIMULATED_LATENCY_SECONDS = Float(ENV.fetch("IMPORT_PAGE_LATENCY_SECONDS", "5"))
+    SIMULATED_POLICY_LATENCY_SECONDS = Float(ENV.fetch("IMPORT_POLICY_LATENCY_SECONDS", "2"))
 
     POLICY_ATTRIBUTES = %w[
       policy_number insured policy_holder beneficiary

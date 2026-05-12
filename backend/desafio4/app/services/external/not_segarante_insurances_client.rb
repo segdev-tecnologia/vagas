@@ -1,6 +1,6 @@
 module External
   class NotSegaranteInsurancesClient
-    PAGE_SIZE = 10
+    PAGE_SIZE = Integer(ENV.fetch("EXTERNAL_PAGE_SIZE", "10"))
     FIXTURES_DIR = Rails.root.join("fixtures", "data")
 
     def fetch_policies(policy_holder:, offset: 0, limit: PAGE_SIZE)

@@ -15,9 +15,13 @@ class PolicyFixtureGenerator
 
   ENDORSEMENT_TYPES = %w[is_increase is_decrease cancellation].freeze
   ORIGIN_TYPE = "origin".freeze
+  ALL_POLICY_TYPES = ([ORIGIN_TYPE] + ENDORSEMENT_TYPES).freeze
 
-  POLICY_NUMBER_WIDTH = 9
-  ENDORSEMENT_PROBABILITY = 0.6
+  POLICY_NUMBER_WIDTH = Integer(ENV.fetch("GENERATOR_POLICY_NUMBER_WIDTH", "9"))
+  ENDORSEMENT_PROBABILITY = Float(ENV.fetch("GENERATOR_ENDORSEMENT_PROBABILITY", "0.6"))
+  WRONG_POLICY_TYPE_PROBABILITY = Float(ENV.fetch("GENERATOR_WRONG_POLICY_TYPE_PROBABILITY", "0.1"))
+  ORIGIN_ISSUE_BACKDATE_MAX_DAYS = Integer(ENV.fetch("GENERATOR_ORIGIN_ISSUE_BACKDATE_MAX_DAYS", "20"))
+  ENDORSEMENT_ISSUE_GAP_MAX_DAYS = Integer(ENV.fetch("GENERATOR_ENDORSEMENT_ISSUE_GAP_MAX_DAYS", "7"))
 
   def initialize(fixtures_dir: File.expand_path("data", __dir__))
     @fixtures_dir = fixtures_dir
@@ -62,6 +66,7 @@ class PolicyFixtureGenerator
       beneficiary: INSUREDS.sample,
       coverage_start_date: start_date,
       coverage_end_date: end_date,
+      issue_date: random_origin_issue_date,
       policy_type: ORIGIN_TYPE,
       insured_amount: amount,
       lmg: amount
@@ -90,7 +95,8 @@ class PolicyFixtureGenerator
       beneficiary: origin["beneficiary"],
       coverage_start_date: Date.iso8601(origin["coverage_start_date"]),
       coverage_end_date: Date.iso8601(origin["coverage_end_date"]),
-      policy_type: type,
+      issue_date: next_endorsement_issue_date(last_endorsement),
+      policy_type: maybe_corrupt_type(type),
       insured_amount: delta,
       lmg: current_lmg + delta
     )
@@ -100,8 +106,8 @@ class PolicyFixtureGenerator
   end
 
   def build_policy(policy_number:, insured:, policy_holder:, beneficiary:,
-                   coverage_start_date:, coverage_end_date:, policy_type:,
-                   insured_amount:, lmg:)
+                   coverage_start_date:, coverage_end_date:, issue_date:,
+                   policy_type:, insured_amount:, lmg:)
     {
       "policy_number" => policy_number,
       "insured" => insured,
@@ -109,11 +115,25 @@ class PolicyFixtureGenerator
       "beneficiary" => beneficiary,
       "coverage_start_date" => coverage_start_date.iso8601,
       "coverage_end_date" => coverage_end_date.iso8601,
-      "issue_date" => Date.today.iso8601,
+      "issue_date" => issue_date.iso8601,
       "policy_type" => policy_type,
       "insured_amount" => insured_amount,
       "lmg" => lmg
     }
+  end
+
+  def random_origin_issue_date
+    Date.today - rand(0..ORIGIN_ISSUE_BACKDATE_MAX_DAYS)
+  end
+
+  def next_endorsement_issue_date(last_endorsement)
+    Date.iso8601(last_endorsement["issue_date"]) + rand(1..ENDORSEMENT_ISSUE_GAP_MAX_DAYS)
+  end
+
+  def maybe_corrupt_type(actual_type)
+    return actual_type unless rand < WRONG_POLICY_TYPE_PROBABILITY
+
+    (ALL_POLICY_TYPES - [actual_type]).sample
   end
 
   def endorsement_amount_for(type, current_lmg)

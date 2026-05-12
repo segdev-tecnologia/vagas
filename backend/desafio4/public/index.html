@@ -54,6 +54,10 @@
 
     .subtitle { margin: 0 0 1.5rem; color: var(--muted); font-size: 0.9rem; }
 
+    .adminer-link { margin: 0 0 1.5rem; font-size: 0.85rem; }
+    .adminer-link a { color: var(--accent); text-decoration: none; }
+    .adminer-link a:hover { text-decoration: underline; }
+
     label { display: block; margin-bottom: 0.4rem; font-size: 0.85rem; color: var(--muted); }
 
     input, select {
@@ -91,6 +95,25 @@
       color: #fff;
     }
     button.danger:hover:not(:disabled) { background: #b91c1c; }
+
+    .sim-controls {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    .sim-controls button { margin-top: 0; flex: 1; }
+
+    .sim-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+      font-family: "Menlo", "Consolas", monospace;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .sim-status .status-dot.running { background: var(--success); }
+    .sim-status .status-dot.stopped { background: var(--muted); }
 
     .result {
       margin-top: 1rem;
@@ -175,8 +198,30 @@
   <div class="layout">
     <div class="panel panel-form">
       <h1>Desafio 4</h1>
-      <p class="subtitle">Geração de fixtures e importação de apólices.</p>
+      <p class="adminer-link">
+        <a href="http://localhost:8765/?pgsql=db&username=postgres&db=desafio4_development&ns=public&select=policies" target="_blank" rel="noopener">Abrir Adminer →</a>
+      </p>
 
+      <section id="simulation-section">
+        <h2>Simulador</h2>
+        <label for="sim-policy-holder">Policy holder</label>
+        <select id="sim-policy-holder" name="policy_holder" required>
+          <option value="">Carregando…</option>
+        </select>
+
+        <div class="sim-controls">
+          <button type="button" id="sim-start-btn">Iniciar</button>
+          <button type="button" id="sim-stop-btn" class="danger" disabled>Parar</button>
+        </div>
+        <div id="sim-status" class="sim-status">
+          <span id="sim-status-dot" class="status-dot"></span>
+          <span id="sim-status-text">parado</span>
+        </div>
+        <div id="sim-result" class="result" role="status" aria-live="polite"></div>
+        <p class="hint">Ctrl+K mostra/esconde as ferramentas avançadas.</p>
+      </section>
+
+      <div id="advanced-tools" hidden>
       <h2>Gerar apólices</h2>
       <form id="generator-form">
         <label for="count">Quantidade</label>
@@ -205,6 +250,7 @@
         title="Apaga TODAS as fixtures geradas e TODAS as apolices da tabela. Acao irreversivel."
       >Nuke</button>
       <div id="nuke-result" class="result" role="status" aria-live="polite"></div>
+      </div>
     </div>
 
     <div class="panel terminal">
@@ -355,38 +401,45 @@
     const importResult = $("import-result");
     const holderInput = $("policy-holder");
 
+    function fillSelect(selectEl, holders) {
+      const previous = selectEl.value;
+      selectEl.innerHTML = "";
+
+      if (holders.length === 0) {
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = "Nenhuma fixture disponível — gere algumas primeiro";
+        opt.disabled = true;
+        opt.selected = true;
+        selectEl.appendChild(opt);
+        return false;
+      }
+
+      const placeholder = document.createElement("option");
+      placeholder.value = "";
+      placeholder.textContent = "Selecione um policy holder…";
+      placeholder.disabled = true;
+      placeholder.selected = true;
+      selectEl.appendChild(placeholder);
+
+      holders.forEach(function (slug) {
+        const opt = document.createElement("option");
+        opt.value = slug;
+        opt.textContent = slug;
+        if (slug === previous) opt.selected = true;
+        selectEl.appendChild(opt);
+      });
+      return true;
+    }
+
     async function loadPolicyHolders() {
       try {
         const r = await fetch("/fixtures/policy_holders", { headers: { "Accept": "application/json" } });
         const data = await r.json();
         const holders = (data.policy_holders || []);
-        holderInput.innerHTML = "";
-
-        if (holders.length === 0) {
-          const opt = document.createElement("option");
-          opt.value = "";
-          opt.textContent = "Nenhuma fixture disponível — gere algumas primeiro";
-          opt.disabled = true;
-          opt.selected = true;
-          holderInput.appendChild(opt);
-          importBtn.disabled = true;
-          return;
-        }
-
-        const placeholder = document.createElement("option");
-        placeholder.value = "";
-        placeholder.textContent = "Selecione um policy holder…";
-        placeholder.disabled = true;
-        placeholder.selected = true;
-        holderInput.appendChild(placeholder);
-
-        holders.forEach(function (slug) {
-          const opt = document.createElement("option");
-          opt.value = slug;
-          opt.textContent = slug;
-          holderInput.appendChild(opt);
-        });
-        importBtn.disabled = false;
+        const hasHolders = fillSelect(holderInput, holders);
+        fillSelect($("sim-policy-holder"), holders);
+        importBtn.disabled = !hasHolders;
       } catch (err) {
         holderInput.innerHTML = '<option value="" disabled selected>Erro ao carregar</option>';
       }
@@ -446,10 +499,10 @@
         if (r.ok) {
           showResult(
             nukeResult,
-            "Removidas " + data.deleted_policies + " apolice(s) e " + data.deleted_fixtures + " fixture(s).",
+            "Removidas " + data.deleted_policies + " apolice(s) e " + data.deleted_fixtures + " fixture(s). Recarregando…",
             "success"
           );
-          loadPolicyHolders();
+          setTimeout(function () { window.location.reload(); }, 800);
         } else {
           showResult(nukeResult, "Erro: " + (data.message || "falha"), "error");
         }
@@ -458,6 +511,100 @@
       } finally {
         nukeBtn.disabled = false;
         nukeBtn.textContent = "Nuke";
+      }
+    });
+    // ---------- simulator ----------
+    const simHolder = $("sim-policy-holder");
+    const simStart = $("sim-start-btn");
+    const simStop = $("sim-stop-btn");
+    const simStatusDot = $("sim-status-dot");
+    const simStatusText = $("sim-status-text");
+    const simResult = $("sim-result");
+
+    function setSimUi(running, holder) {
+      if (running) {
+        simStatusDot.className = "status-dot running";
+        simStatusText.textContent = "rodando" + (holder ? " (" + holder + ")" : "");
+        simStart.disabled = true;
+        simStop.disabled = false;
+        simHolder.disabled = true;
+      } else {
+        simStatusDot.className = "status-dot stopped";
+        simStatusText.textContent = "parado";
+        simStart.disabled = false;
+        simStop.disabled = true;
+        simHolder.disabled = false;
+      }
+    }
+
+    async function refreshSimStatus() {
+      try {
+        const r = await fetch("/simulations", { headers: { "Accept": "application/json" } });
+        const data = await r.json();
+        setSimUi(data.running, data.policy_holder);
+      } catch (_) { /* ignore */ }
+    }
+
+    simStart.addEventListener("click", async function () {
+      const holder = simHolder.value;
+      if (!holder) {
+        showResult(simResult, "Selecione um policy holder.", "error");
+        return;
+      }
+      simStart.disabled = true;
+      simStart.textContent = "iniciando…";
+      try {
+        const [r1, r2] = await Promise.all([
+          fetch("/simulations", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify({ policy_holder: holder })
+          }),
+          fetch("/simulations/activity", {
+            method: "POST",
+            headers: { "Accept": "application/json" }
+          })
+        ]);
+        const data = await r1.json();
+        if (r1.ok || r2.ok) {
+          showResult(simResult, "Simuladores iniciados para " + holder + ".", "success");
+          setSimUi(true, holder);
+        } else {
+          showResult(simResult, "Erro: " + (data.message || data.status || "falha"), "error");
+        }
+      } catch (err) {
+        showResult(simResult, "Erro de rede: " + err.message, "error");
+      } finally {
+        simStart.textContent = "Iniciar";
+      }
+    });
+
+    simStop.addEventListener("click", async function () {
+      simStop.disabled = true;
+      simStop.textContent = "parando…";
+      try {
+        await Promise.all([
+          fetch("/simulations", { method: "DELETE", headers: { "Accept": "application/json" } }),
+          fetch("/simulations/activity", { method: "DELETE", headers: { "Accept": "application/json" } })
+        ]);
+        showResult(simResult, "Sinal de parada enviado. Os loops encerrarão logo após o ciclo atual.", "success");
+      } catch (err) {
+        showResult(simResult, "Erro de rede: " + err.message, "error");
+      } finally {
+        simStop.textContent = "Parar";
+        setTimeout(refreshSimStatus, 1500);
+      }
+    });
+
+    refreshSimStatus();
+    setInterval(refreshSimStatus, 5000);
+
+    // ---------- advanced tools toggle (Ctrl+K) ----------
+    const advancedTools = $("advanced-tools");
+    document.addEventListener("keydown", function (event) {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        advancedTools.hidden = !advancedTools.hidden;
       }
     });
   })();
