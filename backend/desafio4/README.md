@@ -2,6 +2,43 @@
 
 API Rails que simula a integração com uma seguradora fictícia, importa apólices e endossos para um banco Postgres, e streama os logs da importação em tempo real para uma tela web.
 
+## Arquitetura (fictícia)
+
+```mermaid
+flowchart TB
+    subgraph AWS["AWS"]
+        direction TB
+        subgraph EC2["EC2 - instance"]
+            direction TB
+            clock["Clock"]
+            app["Aplicação Principal"]
+            import_service["import_service"]
+        end
+        subgraph RDS["RDS"]
+            postgres[("PostgreSQL")]
+        end
+    end
+
+    subgraph Seguradoras["Seguradoras externas"]
+        direction LR
+        not_seg["not_segarante_insurances"]
+        outra1["Outras seguradoras"]
+        outra2["Outras seguradoras"]
+    end
+
+    AWS ~~~ Seguradoras
+
+    clock --> import_service
+    import_service --> not_seg
+
+    app --> not_seg
+    app --> outra1
+    app --> outra2
+
+    app --> postgres
+    import_service --> postgres
+```
+
 ## Pré-requisitos
 
 - Docker + Docker Compose

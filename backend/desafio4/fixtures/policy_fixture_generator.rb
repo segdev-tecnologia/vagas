@@ -23,6 +23,17 @@ class PolicyFixtureGenerator
   ORIGIN_ISSUE_BACKDATE_MAX_DAYS = Integer(ENV.fetch("GENERATOR_ORIGIN_ISSUE_BACKDATE_MAX_DAYS", "20"))
   ENDORSEMENT_ISSUE_GAP_MAX_DAYS = Integer(ENV.fetch("GENERATOR_ENDORSEMENT_ISSUE_GAP_MAX_DAYS", "7"))
 
+  PT_MONTHS = %w[janeiro fevereiro marco abril maio junho julho agosto setembro outubro novembro dezembro].freeze
+  PT_WEEKDAYS = %w[domingo segunda-feira terca-feira quarta-feira quinta-feira sexta-feira sabado].freeze
+
+  TYPE_TO_PT = {
+    "origin"       => "Origem",
+    "is_increase"  => "Aumento",
+    "is_decrease"  => "Reducao",
+    "cancellation" => "Cancelamento"
+  }.freeze
+  PT_TO_TYPE = TYPE_TO_PT.each_with_object({}) { |(k, v), h| h[v.downcase] = k }.freeze
+
   def initialize(fixtures_dir: File.expand_path("data", __dir__))
     @fixtures_dir = fixtures_dir
     FileUtils.mkdir_p(@fixtures_dir)
@@ -203,7 +214,8 @@ class PolicyFixtureGenerator
     fixtures = {}
     Dir.glob(File.join(@fixtures_dir, "*.json")).each do |path|
       holder = File.basename(path, ".json")
-      fixtures[holder] = JSON.parse(File.read(path))
+      raw = JSON.parse(File.read(path))
+      fixtures[holder] = raw.map { |entry| deserialize_from_persistence(entry) }
     end
     fixtures
   end
@@ -222,7 +234,8 @@ class PolicyFixtureGenerator
   def persist_fixtures
     @policies_by_holder.each do |holder, policies|
       path = File.join(@fixtures_dir, "#{holder}.json")
-      File.write(path, JSON.pretty_generate(policies))
+      payload = policies.map { |p| serialize_for_persistence(p) }
+      File.write(path, JSON.pretty_generate(payload))
     end
   end
 
@@ -231,6 +244,89 @@ class PolicyFixtureGenerator
       policies = JSON.parse(File.read(path)).shuffle
       File.write(path, JSON.pretty_generate(policies))
     end
+  end
+
+  def serialize_for_persistence(policy)
+    {
+      "NumeroApolice"        => policy["policy_number"],
+      "Segurado"             => policy["insured"],
+      "Tomador"              => policy["policy_holder"],
+      "Beneficiario"         => policy["beneficiary"],
+      "DataInicioVigencia"   => format_date_weirdly(Date.iso8601(policy["coverage_start_date"])),
+      "DataFimVigencia"      => format_date_weirdly(Date.iso8601(policy["coverage_end_date"])),
+      "DataEmissao"          => format_date_weirdly(Date.iso8601(policy["issue_date"])),
+      "TipoApolice"          => format_type_weirdly(policy["policy_type"]),
+      "ValorSegurado"        => format_amount_weirdly(policy["insured_amount"]),
+      "LimiteMaximoGarantia" => format_amount_weirdly(policy["lmg"])
+    }
+  end
+
+  def deserialize_from_persistence(entry)
+    {
+      "policy_number"       => entry["NumeroApolice"],
+      "insured"             => entry["Segurado"],
+      "policy_holder"       => entry["Tomador"],
+      "beneficiary"         => entry["Beneficiario"],
+      "coverage_start_date" => parse_date_weird(entry["DataInicioVigencia"]).iso8601,
+      "coverage_end_date"   => parse_date_weird(entry["DataFimVigencia"]).iso8601,
+      "issue_date"          => parse_date_weird(entry["DataEmissao"]).iso8601,
+      "policy_type"         => parse_type_weird(entry["TipoApolice"]),
+      "insured_amount"      => parse_amount_weird(entry["ValorSegurado"]),
+      "lmg"                 => parse_amount_weird(entry["LimiteMaximoGarantia"])
+    }
+  end
+
+  def format_date_weirdly(date)
+    "#{PT_WEEKDAYS[date.wday].capitalize}, #{date.day} de #{PT_MONTHS[date.month - 1].capitalize} de #{date.year}"
+  end
+
+  def parse_date_weird(value)
+    return value if value.is_a?(Date)
+    s = value.to_s.strip
+    return Date.iso8601(s) if s.match?(/\A\d{4}-\d{2}-\d{2}\z/)
+    return Date.strptime(s, "%d/%m/%Y") if s.match?(%r{\A\d{1,2}/\d{1,2}/\d{4}\z})
+
+    cleaned = s.sub(/\A[^,]+,\s*/, "")
+    if (m = cleaned.match(/(\d{1,2})\s+de\s+([\p{L}]+)\s+de\s+(\d{4})/iu))
+      day = m[1].to_i
+      month_name = m[2].to_s.downcase.tr("ç", "c")
+      month = PT_MONTHS.index(month_name)
+      raise ArgumentError, "mes invalido: #{m[2]}" unless month
+      return Date.new(m[3].to_i, month + 1, day)
+    end
+
+    Date.parse(s)
+  end
+
+  def format_amount_weirdly(amount)
+    whole = amount.abs
+    sign = amount.negative? ? "-" : ""
+    "#{sign}R$ #{thousands_pt(whole)},00"
+  end
+
+  def parse_amount_weird(value)
+    return value if value.is_a?(Numeric)
+    s = value.to_s.strip
+    negative = s.start_with?("-")
+    s = s.sub(/\A-/, "").sub(/\A\s*(R\$|BRL)\s*/i, "").strip
+    if s.include?(",")
+      s = s.delete(".").tr(",", ".")
+    end
+    num = s.to_f.round.to_i
+    negative ? -num : num
+  end
+
+  def thousands_pt(n)
+    n.to_s.reverse.scan(/\d{1,3}/).join(".").reverse
+  end
+
+  def format_type_weirdly(type)
+    TYPE_TO_PT.fetch(type, type)
+  end
+
+  def parse_type_weird(value)
+    s = value.to_s.strip.downcase
+    PT_TO_TYPE[s] || (ALL_POLICY_TYPES.include?(s) ? s : s)
   end
 end
 

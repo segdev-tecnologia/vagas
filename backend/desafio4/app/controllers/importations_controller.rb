@@ -5,7 +5,7 @@ class ImportationsController < ApplicationController
 
     Thread.new do
       Rails.application.executor.wrap do
-        Importations::Import.new(policy_holder).call
+        Import.new(policy_holder).call
       rescue => e
         BroadcastLogger.new.error("[Import] fatal: #{e.class}: #{e.message}")
       end

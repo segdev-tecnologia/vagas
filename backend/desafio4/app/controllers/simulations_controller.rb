@@ -1,13 +1,13 @@
 class SimulationsController < ApplicationController
   def show
-    render json: Simulations::Simulator.instance.status
+    render json: Simulator.instance.status
   end
 
   def create
     policy_holder = params[:policy_holder].to_s.strip
     raise ArgumentError, "policy_holder is required" if policy_holder.empty?
 
-    if Simulations::Simulator.instance.start(policy_holder)
+    if Simulator.instance.start(policy_holder)
       render json: { status: "started", policy_holder: policy_holder }, status: :accepted
     else
       render json: { status: "already_running" }, status: :conflict
@@ -17,7 +17,7 @@ class SimulationsController < ApplicationController
   end
 
   def destroy
-    if Simulations::Simulator.instance.stop
+    if Simulator.instance.stop
       render json: { status: "stopping" }
     else
       render json: { status: "not_running" }, status: :conflict
